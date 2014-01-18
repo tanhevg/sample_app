@@ -1,8 +1,13 @@
 namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
-    User.create!(name: "Example User",
+    User.create!(name: "Example Admin 1",
                  email: "example@railstutorial.org",
+                 password: "foobar",
+                 password_confirmation: "foobar",
+                 admin: true)
+    User.create!(name: "Example Admin2",
+                 email: "example-admin@railstutorial.org",
                  password: "foobar",
                  password_confirmation: "foobar",
                  admin: true)

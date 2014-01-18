@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :not_signed_in_user, only: [:new, :create]
   before_action :signed_in_user, only: [:edit, :update, :index]
   before_action :correct_user, only: [:edit, :update]
   
@@ -38,8 +39,13 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User deleted."
+    user = User.find(params[:id])
+    if user.admin?
+      flash[:error] = "Cannot delete admin user"
+    else
+      user.destroy
+      flash[:success] = "User deleted."
+    end
     redirect_to users_url
   end
 
@@ -47,6 +53,12 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    end
+
+    def not_signed_in_user
+      if signed_in?
+        redirect_to root_url
+      end
     end
 
     def signed_in_user

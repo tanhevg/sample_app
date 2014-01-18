@@ -147,7 +147,7 @@ describe "User pages" do
         fill_in "Name",             with: new_name
         fill_in "Email",            with: new_email
         fill_in "Password",         with: user.password
-        fill_in "Confirm Password", with: user.password
+        fill_in "Confirmation", with: user.password
         click_button "Save changes"
       end
 
@@ -168,6 +168,27 @@ describe "User pages" do
       patch user_path(user), { user: { admin: true, password: user.password, password_confirmation: user.password } }
     end
     specify { expect(user.reload).not_to be_admin }
+  end
+
+  describe "do not allow deleting admin users" do
+    let(:user) {FactoryGirl.create(:admin)}
+    before do 
+      sign_in user, no_capybara: true
+      delete user_path(user)
+    end
+    specify { expect(user.reload) }
+
+  end
+
+  describe "signed in user" do
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      sign_in user 
+    end
+    describe "new" do
+      before { visit new_user_path }
+      it { should_not have_title('Sign up') }
+    end
   end
 
 end
