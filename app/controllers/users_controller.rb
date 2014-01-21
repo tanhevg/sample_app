@@ -1,7 +1,21 @@
 class UsersController < ApplicationController
   before_action :not_signed_in_user, only: [:new, :create]
-  before_action :signed_in_user, only: [:edit, :update, :index]
+  before_action :signed_in_user, only: [:edit, :update, :index, :following, :followers]
   before_action :correct_user, only: [:edit, :update]
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
+  end
   
   def index
     @users = User.paginate(page: params[:page])
